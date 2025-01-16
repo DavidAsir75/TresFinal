@@ -1,22 +1,18 @@
 package com.example.tresfinal
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.os.Bundle
-import android.view.ViewGroup
+import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.animation.addListener
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tablero: Array<Array<Button>>
     private lateinit var tvTurno: TextView
-    private lateinit var contenedorConfeti: ViewGroup
+    private lateinit var confettiView: ConfettiView
     private var jugadorActual = 'X'
     private var movimientos = 0
     private lateinit var jugadorX: String
@@ -26,29 +22,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Obtén los nombres de los jugadores del Intent
+        // Inicializa las vistas
         jugadorX = intent.getStringExtra("jugadorX") ?: "Jugador X"
         jugadorO = intent.getStringExtra("jugadorO") ?: "Jugador O"
-
         tvTurno = findViewById(R.id.tvTurno)
-        contenedorConfeti = findViewById(R.id.contenedorConfeti)
+        confettiView = findViewById(R.id.confettiView)
         val gridLayout = findViewById<GridLayout>(R.id.tablero)
         val btnReiniciar = findViewById<Button>(R.id.btnReiniciar)
 
         // Inicializa el tablero
         tablero = Array(3) { fila ->
             Array(3) { columna ->
-                Button(this).apply {
-                    text = ""
-                    textSize = 24f
-                    setOnClickListener { realizarMovimiento(this, fila, columna) }
-                    gridLayout.addView(this, GridLayout.LayoutParams().apply {
-                        width = 0
-                        height = 0
-                        rowSpec = GridLayout.spec(fila, 1f)
-                        columnSpec = GridLayout.spec(columna, 1f)
-                    })
-                }
+                val button = Button(this)
+                button.text = ""
+                button.textSize = 24f
+                button.setOnClickListener { realizarMovimiento(button, fila, columna) }
+                gridLayout.addView(button, GridLayout.LayoutParams().apply {
+                    width = 0
+                    height = 0
+                    rowSpec = GridLayout.spec(fila, 1f)
+                    columnSpec = GridLayout.spec(columna, 1f)
+                })
+                button
             }
         }
 
@@ -68,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         if (verificarGanador()) {
             val ganador = if (jugadorActual == 'X') jugadorX else jugadorO
             mostrarGanador("¡$ganador ha ganado!")
-
             return
         }
 
@@ -105,9 +99,9 @@ class MainActivity : AppCompatActivity() {
             .setMessage(mensaje)
             .setPositiveButton("OK") { _, _ -> }
             .show()
+
+        confettiView.mostrarConfeti() // Muestra el confeti
     }
-
-
 
     private fun reiniciarJuego() {
         tablero.flatten().forEach {
@@ -117,7 +111,8 @@ class MainActivity : AppCompatActivity() {
         jugadorActual = 'X'
         movimientos = 0
         tvTurno.text = "Turno de $jugadorX"
-        contenedorConfeti.removeAllViews()
-        contenedorConfeti.visibility = ViewGroup.GONE
+
+        // Limpia el confeti
+        confettiView.reiniciarConfeti()
     }
 }

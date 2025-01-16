@@ -44,8 +44,10 @@
 
     <!-- Contenedor para las animaciones de confeti -->
     <FrameLayout
-        android:id="@+id/contenedorConfeti"
+        android:id="@+id/confettiView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
